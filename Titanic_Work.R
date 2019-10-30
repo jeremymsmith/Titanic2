@@ -72,12 +72,14 @@ final$Ticket <- NULL
 final$Name <- NULL
 final$Cabin <- NULL
 
+#I seem to need to do this to force everything to the same class
 final <- rbind(full_train[1,-2],final)
 final <- final[-1,]
 
+
 Survived <- predict(rf.full_train, newdata = final)
 final <- cbind(final,Survived)
+final <- final%>%select(1,12)
+write_csv(final,"Titanic15.csv")
 
 
-sapply(full_train,class)
-sapply(final,class)
