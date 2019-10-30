@@ -54,7 +54,30 @@ full_test <- full[-training.samples,]
 #Trying a random forest. 
 #Realized that I need to get rid of cat. variables with too many levels
 #Also need to make sure that vectors don't have NAs
-rf.full_train <- randomForest(Survived~.,data=full_train,importance=TRUE)
-View(full_train)
+rf.full_train <- randomForest(Survived~.-PassengerId,data=full_train,importance=TRUE)
+
+#Testing random forest on full_test
+mean(predict(rf.full_train,full_test)==full_test$Survived)
+
+#Imported test into global environment. 
+#Creating "final" for submission to kaggle
+final <- test
+final <- final%>%mutate(HasCabin=(ifelse(Cabin=="",0,1)))%>%
+  mutate(Famille=Parch+SibSp)%>%
+  mutate(FilledAge=ifelse(is.na(Age),mean(Age,na.rm=TRUE),Age))%>%
+  mutate(Child=ifelse(FilledAge<16,TRUE,FALSE))
+final$Embarked <- replace(final$Embarked,which(is.na(final$Embarked)),"S")
+final$Age <- NULL
+final$Ticket <- NULL
+final$Name <- NULL
+final$Cabin <- NULL
+
+final <- rbind(full_train[1,-2],final)
+final <- final[-1,]
+
+Survived <- predict(rf.full_train, newdata = final)
+final <- cbind(final,Survived)
 
 
+sapply(full_train,class)
+sapply(final,class)
