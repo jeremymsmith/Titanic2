@@ -17,13 +17,18 @@ full <- train
 full <- full%>%mutate(HasCabin=(ifelse(Cabin=="",0,1)))%>%
   mutate(Famille=Parch+SibSp)%>%
   mutate(FilledAge=ifelse(is.na(Age),mean(Age,na.rm=TRUE),Age))%>%
-  mutate(Child=ifelse(FilledAge<16,TRUE,FALSE))%>%
-  mutate(WCG=ifelse(Child==TRUE|Sex=="female",TRUE,FALSE))
+  mutate(Child=ifelse(FilledAge<16,TRUE,FALSE))
 full$Embarked <- replace(full$Embarked,which(is.na(full$Embarked)),"S")
+full$Survived <- full$Survived%>%as.factor()
+full$Age <- NULL
+full$Ticket <- NULL
+full$Name <- NULL
+full$Cabin <- NULL
+View(full)
 
 #Splitting full data frame by who lived and who died for some visualization
-full_survived <- full%>%filter(Survived==1)
-full_died <- full%>%filter(Survived==0)
+full_survived <- full%>%filter(Survived=="1")
+full_died <- full%>%filter(Survived=="0")
 
 #Count visualization of who survived and who died by Sex
 ggplot(data=full_survived)+
@@ -46,5 +51,10 @@ training.samples <- full$Survived%>%
 full_train <- full[training.samples,]
 full_test <- full[-training.samples,]
 
+#Trying a random forest. 
+#Realized that I need to get rid of cat. variables with too many levels
+#Also need to make sure that vectors don't have NAs
+rf.full_train <- randomForest(Survived~.,data=full_train,importance=TRUE)
+View(full_train)
 
 
