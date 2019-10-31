@@ -32,7 +32,7 @@ full_train <- full[training.samples,]
 full_test <- full[-training.samples,]
 
 #Trying a random forest. 
-rf.full_train <- randomForest(Survived~.-PassengerId,data=full_train,importance=TRUE)
+rf.full_train <- randomForest(Survived~Pclass+Sex+Famille+Child,data=full_train,importance=TRUE)
 
 #Testing random forest on full_test
 mean(predict(rf.full_train,full_test)==full_test$Survived)
