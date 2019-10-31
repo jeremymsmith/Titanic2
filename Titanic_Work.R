@@ -79,7 +79,12 @@ final <- final[-1,]
 
 Survived <- predict(rf.full_train, newdata = final)
 final <- cbind(final,Survived)
-final <- final%>%select(1,12)
-write_csv(final,"Titanic15.csv")
+Titanic15 <- cbind(final$PassengerId,final$Survived)%>%
+  as.data.frame()%>%
+  rename(PassengerId=V1)%>%
+  mutate(Survived=V2-1)%>%
+  select(1,3)
 
+write_csv(Titanic15,"Titanic15.csv")
 
+view(Titanic15)
