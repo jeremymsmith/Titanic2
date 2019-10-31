@@ -24,26 +24,6 @@ full$Age <- NULL
 full$Ticket <- NULL
 full$Name <- NULL
 full$Cabin <- NULL
-View(full)
-
-#Splitting full data frame by who lived and who died for some visualization
-full_survived <- full%>%filter(Survived=="1")
-full_died <- full%>%filter(Survived=="0")
-
-#Count visualization of who survived and who died by Sex
-ggplot(data=full_survived)+
-  geom_bar(mapping=aes(x=Sex))
-ggsave("Lived_Sex.png")
-ggplot(data=full_died)+
-  geom_bar(mapping=aes(x=Sex))
-ggsave("Died_Sex.png")
-
-#Same for Pclass. 
-#It looks like Pclass might matter, but not as much as Sex.
-hist(full_survived$Pclass)
-ggsave("Lived_Class.png")
-hist(full_died$Pclass)
-ggsave("Died_Class.png")
 
 #Creating a training and testing subset randomly with features from full
 training.samples <- full$Survived%>%
@@ -52,9 +32,7 @@ full_train <- full[training.samples,]
 full_test <- full[-training.samples,]
 
 #Trying a random forest. 
-#Realized that I need to get rid of cat. variables with too many levels
-#Also need to make sure that vectors don't have NAs
-rf.full_train <- randomForest(Survived~.-PassengerId,data=full_train,mtry=4,importance=TRUE)
+rf.full_train <- randomForest(Survived~.-PassengerId,data=full_train,importance=TRUE)
 
 #Testing random forest on full_test
 mean(predict(rf.full_train,full_test)==full_test$Survived)
@@ -89,4 +67,5 @@ Titanic15[is.na(Titanic15)] <- 0
 
 write_csv(Titanic15,"Titanic15.csv")
 
+#Might attempt to add gradient boosting next. 
 
