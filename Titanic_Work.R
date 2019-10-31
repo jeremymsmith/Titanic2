@@ -47,14 +47,14 @@ ggsave("Died_Class.png")
 
 #Creating a training and testing subset randomly with features from full
 training.samples <- full$Survived%>%
-  createDataPartition(p=.8,list=FALSE)
+  createDataPartition(p=.25,list=FALSE)
 full_train <- full[training.samples,]
 full_test <- full[-training.samples,]
 
 #Trying a random forest. 
 #Realized that I need to get rid of cat. variables with too many levels
 #Also need to make sure that vectors don't have NAs
-rf.full_train <- randomForest(Survived~.-PassengerId,data=full_train,importance=TRUE)
+rf.full_train <- randomForest(Survived~.-PassengerId,data=full_train,mtry=4,importance=TRUE)
 
 #Testing random forest on full_test
 mean(predict(rf.full_train,full_test)==full_test$Survived)
@@ -89,5 +89,4 @@ Titanic15[is.na(Titanic15)] <- 0
 
 write_csv(Titanic15,"Titanic15.csv")
 
-view(Titanic15)
 
