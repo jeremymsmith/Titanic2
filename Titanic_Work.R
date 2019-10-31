@@ -85,6 +85,8 @@ Titanic15 <- cbind(final$PassengerId,final$Survived)%>%
   mutate(Survived=V2-1)%>%
   select(1,3)
 
+Titanic15$Survived <- Titanic15$Survived%>%as.factor()
+
 write_csv(Titanic15,"Titanic15.csv")
 
 view(Titanic15)
