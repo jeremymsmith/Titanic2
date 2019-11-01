@@ -89,13 +89,13 @@ Survived.log <- log.pred
 log.probs_female <- predict(log.full_female,final,type="response")
 log.pred_female <- rep(0,418)
 log.pred_female[log.probs_female>.5] <- 1
-Survived_female.log <- ifelse(log.pred_female==1&Sex=="female",
+Survived_female.log <- ifelse(log.pred_female==1&final$Sex=="female",
                               1,0)
 
 log.probs_male <- predict(log.full_male,final,type="response")
 log.pred_male <- rep(0,418)
 log.pred_male[log.probs_male>.5] <- 1
-Survived_male.log <- ifelse(log.pred_male==1&Sex=="male",
+Survived_male.log <- ifelse(log.pred_male==1&final$Sex=="male",
                             1,0)
 Survived_gender.log <- Survived_female.log+Survived_male.log
 
@@ -129,6 +129,6 @@ Titanic17 <- cbind(final$PassengerId,final$Survived)%>%
   mutate(Survived=V2)%>%
   select(1,3)
 
-Titanic17[is.na(Titanic16)] <- 0
-write_csv(Titanic17,"Titanic16.csv")
+Titanic17[is.na(Titanic17)] <- 0
+write_csv(Titanic17,"Titanic17.csv")
 
