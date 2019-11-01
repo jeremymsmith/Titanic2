@@ -95,7 +95,7 @@ Survived_female.log <- ifelse(log.pred_female==1&Sex=="female",
 log.probs_male <- predict(log.full_male,final,type="response")
 log.pred_male <- rep(0,418)
 log.pred_male[log.probs_male>.5] <- 1
-Survived_male.log <- ifelse(log.pred_male==1$Sex=="male",
+Survived_male.log <- ifelse(log.pred_male==1&Sex=="male",
                             1,0)
 Survived_gender.log <- Survived_female.log+Survived_male.log
 
@@ -107,6 +107,7 @@ Survived.rf <- predict(rf.full,final)
 Survived.rf <- as.numeric(Survived.rf)-1
 Survived.boost <- as.numeric(Survived.boost)
 
+#Calculates predicted Survived by combining predictions from 4 models.
 final <- final%>%
   data.frame(Survived.boost)%>%
   data.frame(Survived.rf)%>%
@@ -121,7 +122,7 @@ final <- final%>%
   mutate(Survived=ifelse(Survival_Mean>.5,1,0))
 
  
-
+#Writes csv for submission
 Titanic17 <- cbind(final$PassengerId,final$Survived)%>%
   as.data.frame()%>%
   rename(PassengerId=V1)%>%
@@ -129,10 +130,5 @@ Titanic17 <- cbind(final$PassengerId,final$Survived)%>%
   select(1,3)
 
 Titanic17[is.na(Titanic16)] <- 0
-
-view(Titanic17)
-
 write_csv(Titanic17,"Titanic16.csv")
 
-#Next thing to try: Mixed method, including...
-#logistic regression (WCG), random forest, split/logistic, and gradient boost
