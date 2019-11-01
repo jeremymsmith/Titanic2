@@ -89,12 +89,17 @@ Survived.log <- log.pred
 log.probs_female <- predict(log.full_female,final,type="response")
 log.pred_female <- rep(0,418)
 log.pred_female[log.probs_female>.5] <- 1
-Survived_female.log <- log.pred_female
+Survived_female.log <- ifelse(log.pred_female==1&Sex=="female",
+                              1,0)
 
 log.probs_male <- predict(log.full_male,final,type="response")
 log.pred_male <- rep(0,418)
 log.pred_male[log.probs_male>.5] <- 1
-Survived_male.log <- log.pred_male
+Survived_male.log <- ifelse(log.pred_male==1$Sex=="male",
+                            1,0)
+Survived_gender.log <- Survived_female.log+Survived_male.log
+
+
 
 final <- rbind(full[1,-2],final)
 final <- final[-1,]
@@ -112,22 +117,22 @@ final <- final%>%
                           Survived.rf+
                           Survived.log+
                           Survived_male.log+
-                          Survived_female.log)/5)%>%
+                          Survived_female.log)/4)%>%
   mutate(Survived=ifelse(Survival_Mean>.5,1,0))
 
  
 
-Titanic16 <- cbind(final$PassengerId,final$Survived)%>%
+Titanic17 <- cbind(final$PassengerId,final$Survived)%>%
   as.data.frame()%>%
   rename(PassengerId=V1)%>%
   mutate(Survived=V2)%>%
   select(1,3)
 
-Titanic16[is.na(Titanic16)] <- 0
+Titanic17[is.na(Titanic16)] <- 0
 
+view(Titanic17)
 
-
-write_csv(Titanic16,"Titanic16.csv")
+write_csv(Titanic17,"Titanic16.csv")
 
 #Next thing to try: Mixed method, including...
 #logistic regression (WCG), random forest, split/logistic, and gradient boost
