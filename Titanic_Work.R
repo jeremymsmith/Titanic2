@@ -120,10 +120,12 @@ final <- final%>%
 Titanic16 <- cbind(final$PassengerId,final$Survived)%>%
   as.data.frame()%>%
   rename(PassengerId=V1)%>%
-  mutate(Survived=V2-1)%>%
+  mutate(Survived=V2)%>%
   select(1,3)
 
 Titanic16[is.na(Titanic16)] <- 0
+
+
 
 write_csv(Titanic16,"Titanic16.csv")
 
