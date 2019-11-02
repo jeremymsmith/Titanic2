@@ -20,7 +20,7 @@ full <- train
 full <- full%>%mutate(HasCabin=(ifelse(Cabin=="",0,1)))%>%
   mutate(Famille=Parch+SibSp)%>%
   mutate(FilledAge=ifelse(is.na(Age),mean(Age,na.rm=TRUE),Age))%>%
-  mutate(Child=ifelse(FilledAge<16,TRUE,FALSE))%>%
+  mutate(Child=ifelse(FilledAge<=22,TRUE,FALSE))%>%
   mutate(HasFamily=ifelse(Famille>0,TRUE,FALSE))%>%
   mutate(WCG=ifelse(Sex=="female"|Child==TRUE,TRUE,FALSE))
 full$Embarked <- replace(full$Embarked,which(is.na(full$Embarked)),"S")
@@ -56,9 +56,28 @@ full <- full%>%mutate(HighClass=ifelse(Pclass>2,TRUE,FALSE))
 full$HighClass <- full$HighClass%>%as.factor()
 log.full <- glm(Survived~WCG+Sex+HighClass,data=full,family="binomial")
 
-#Need to go get bread and do things. 
+#Imported test into global environment. 
+#Creating "final" for submission to kaggle
+final <- test
+final <- final%>%
+  mutate(FilledAge=ifelse(is.na(Age),mean(Age,na.rm=TRUE),Age))%>%
+  mutate(Child=ifelse(FilledAge<=22,TRUE,FALSE))%>%
+  mutate(WCG=ifelse(Sex=="female"|Child==TRUE,TRUE,FALSE))%>%
+  mutate(HighClass=ifelse(Pclass>2,TRUE,FALSE))
 
+final$HighClass <- final$HighClass%>%as.factor()
+final$Child <- final$Child%>%as.factor()
+final$WCG <- final$WCG%>%as.factor()
 
+#Applying log model to make predictions in kaggle test set
+final.probs <- predict(log.full,final,type="response")
+final.pred <- rep(0,418)
+final.pred[final.probs>.5] <- 1
+final <- cbind(final$PassengerId,final.pred)%>%as.data.frame()%>%
+  rename(PassengerId=V1)%>%
+  rename(Survived=final.pred)
 
+#Writing dataframe to csv for submission
+final%>%write_csv("Titanic18.csv")
 
 
